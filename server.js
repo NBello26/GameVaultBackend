@@ -6,10 +6,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Pool de conexión usando variable de entorno DATABASE_URL
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false } // necesario para NeonDB
+    ssl: { rejectUnauthorized: false }
 });
 
 // ===== Rutas ===== //
@@ -43,6 +42,18 @@ app.post("/login", async (req, res) => {
     }
 });
 
+// Obtener datos de usuario por email
+app.get("/users/:email", async (req, res) => {
+    const { email } = req.params;
+    try {
+        const result = await pool.query("SELECT email, username FROM users WHERE email=$1", [email]);
+        if (result.rows.length === 0) return res.status(404).json({ error: "Usuario no encontrado" });
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Guardar comentario
 app.post("/comments", async (req, res) => {
     const { animeId, title, content, email, username } = req.body;
@@ -68,6 +79,27 @@ app.get("/comments/:animeId", async (req, res) => {
     }
 });
 
-// Puerto dinámico para Render
+// Obtener comentarios de un usuario
+app.get("/comments/user/:email", async (req, res) => {
+    const { email } = req.params;
+    try {
+        const result = await pool.query("SELECT * FROM comments WHERE email=$1", [email]);
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Eliminar comentario por animeId y email
+app.delete("/comments/:animeId/:email", async (req, res) => {
+    const { animeId, email } = req.params;
+    try {
+        await pool.query("DELETE FROM comments WHERE animeId=$1 AND email=$2", [animeId, email]);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
