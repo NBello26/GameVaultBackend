@@ -59,7 +59,7 @@ app.post("/comments", async (req, res) => {
     const { animeId, title, content, email, username } = req.body;
     try {
         await pool.query(
-            "INSERT INTO comments(animeId, title, content, email, username) VALUES($1,$2,$3,$4,$5)",
+            'INSERT INTO comments("animeId", title, content, email, username) VALUES($1,$2,$3,$4,$5)',
             [animeId, title, content, email, username]
         );
         res.json({ success: true });
@@ -68,7 +68,7 @@ app.post("/comments", async (req, res) => {
     }
 });
 
-// Obtener comentarios por animeId
+
 // Obtener comentarios por animeId
 app.get("/comments/:animeId", async (req, res) => {
     const { animeId } = req.params;
