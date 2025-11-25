@@ -101,5 +101,21 @@ app.delete("/comments/:animeId/:email", async (req, res) => {
     }
 });
 
+// Actualizar comentario por animeId y email
+app.put("/comments/:animeId/:email", async (req, res) => {
+    const { animeId, email } = req.params;
+    const { title, content } = req.body;
+
+    try {
+        await pool.query(
+            "UPDATE comments SET title=$1, content=$2 WHERE animeId=$3 AND email=$4",
+            [title, content, animeId, email]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
