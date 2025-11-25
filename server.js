@@ -69,15 +69,17 @@ app.post("/comments", async (req, res) => {
 });
 
 // Obtener comentarios por animeId
+// Obtener comentarios por animeId
 app.get("/comments/:animeId", async (req, res) => {
     const { animeId } = req.params;
     try {
-        const result = await pool.query("SELECT * FROM comments WHERE animeId=$1", [animeId]);
+        const result = await pool.query('SELECT * FROM comments WHERE "animeId"=$1', [animeId]);
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
 
 // Obtener comentarios de un usuario
 app.get("/comments/user/:email", async (req, res) => {
