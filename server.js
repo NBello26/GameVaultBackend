@@ -90,32 +90,33 @@ app.get("/comments/user/:email", async (req, res) => {
     }
 });
 
-// Eliminar comentario por animeId y email
-app.delete("/comments/:animeId/:email", async (req, res) => {
-    const { animeId, email } = req.params;
+// DELETE /comments/:id
+app.delete("/comments/:id", async (req, res) => {
+    const { id } = req.params;
     try {
-        await pool.query("DELETE FROM comments WHERE animeId=$1 AND email=$2", [animeId, email]);
+        await pool.query("DELETE FROM comments WHERE id=$1", [id]);
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// Actualizar comentario por animeId y email
-app.put("/comments/:animeId/:email", async (req, res) => {
-    const { animeId, email } = req.params;
+// PUT /comments/:id
+app.put("/comments/:id", async (req, res) => {
+    const { id } = req.params;
     const { title, content } = req.body;
 
     try {
         await pool.query(
-            "UPDATE comments SET title=$1, content=$2 WHERE animeId=$3 AND email=$4",
-            [title, content, animeId, email]
+            "UPDATE comments SET title=$1, content=$2 WHERE id=$3",
+            [title, content, id]
         );
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
